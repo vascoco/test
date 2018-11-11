@@ -87,44 +87,45 @@ export default {
 </script>
 
 <style lang="less" >
-#app {
+.home {
   height: 100%;
-}
-.el-header {
-  height: 60px;
-  line-height: 60px;
-  background-color: #b3c1cd;
-  .logo {
-    width: 180px;
-    height: 100%;
-    background-image: url('../assets/logo.png');
-    background-size: contain;
-    background-position: center center;
-    background-repeat: no-repeat;
-    float: left;
-  }
-  .logout {
-    width: 180px;
+
+  .el-header {
     height: 60px;
-    float: right;
-    font-weight: 700;
-    a {
-      color: orangered;
+    line-height: 60px;
+    background-color: #b3c1cd;
+    .logo {
+      width: 180px;
+      height: 100%;
+      background-image: url('../assets/logo.png');
+      background-size: contain;
+      background-position: center center;
+      background-repeat: no-repeat;
+      float: left;
+    }
+    .logout {
+      width: 180px;
+      height: 60px;
+      float: right;
+      font-weight: 700;
+      a {
+        color: orangered;
+      }
+    }
+    .title {
+      text-align: center;
+      font-weight: 700;
+      font-size: 30px;
+      color: #fff;
+      overflow: hidden;
     }
   }
-  .title {
-    text-align: center;
-    font-weight: 700;
-    font-size: 30px;
-    color: #fff;
-    overflow: hidden;
-  }
-}
-.el-container {
-  height: 100%;
+
   .el-aside {
-    height: 100%;
     background-color: rgb(84, 92, 100);
+    .el-submenu {
+      width: 200px;
+    }
   }
   .el-main {
     background-color: #eaeef1;

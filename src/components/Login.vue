@@ -8,7 +8,7 @@
     <el-input v-model="form.username"></el-input>
   </el-form-item>
   <el-form-item label="密码" prop="password">
-    <el-input v-model="form.password" type="password"></el-input>
+    <el-input v-model="form.password" type="password" @click.native="login"></el-input>
   </el-form-item>
   <el-form-item>
     <el-button type="primary" @click="login" >立即创建</el-button>
