@@ -47,22 +47,20 @@ export default {
   },
   methods: {
     login() {
-      this.$refs.form.validate(valid => {
+      this.$refs.form.validate(async valid => {
         if (valid) {
-          axios({
+          let res = await axios({
             url: 'http://localhost:8888/api/private/v1/login',
             method: 'post',
             data: this.form
-          }).then(res => {
-            console.log(res.data)
-            if (res.data.meta.status === 200) {
-              this.$message.success('登陆成功')
-              localStorage.setItem('token', res.data.data.token)
-              this.$router.push('/home')
-            } else {
-              this.$message.error('用户名或密码错误')
-            }
           })
+          if (res.meta.status === 200) {
+            this.$message.success('登陆成功')
+            localStorage.setItem('token', res.data.token)
+            this.$router.push('/home')
+          } else {
+            this.$message.error('用户名或密码错误')
+          }
         } else {
           return false
         }

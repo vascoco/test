@@ -160,8 +160,8 @@ export default {
   },
   methods: {
     // 封装渲染
-    render() {
-      this.axios({
+    async render() {
+      let res = await this.axios({
         method: 'get',
         url: 'users',
         params: {
@@ -169,12 +169,15 @@ export default {
           pagenum: this.currentPage,
           pagesize: this.pageSize
         }
-      }).then(res => {
-        if (res.meta.status === 200) {
-          this.userlist = res.data.users
-          this.total = res.data.total
-        }
       })
+      let {
+        meta: { status },
+        data: { users, total }
+      } = res
+      if (status === 200) {
+        this.userlist = users
+        this.total = total
+      }
     },
     // 页码查询
     handleCP(val) {
@@ -187,26 +190,23 @@ export default {
       this.render()
     },
     // 删除用户
-    del(id) {
-      this.$confirm('是否继续删除操作?', '温馨提示', {
+    async del(id) {
+      await this.$confirm('是否继续删除操作?', '温馨提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(res => {
-        this.axios({
-          url: `users/${id}`,
-          method: 'delete'
-        }).then(res => {
-          if (res.meta.status === 200) {
-            console.log(res)
-            // 如果返回的数据数组长度等于1 并且 当前页大于1  就让当前页减1
-            if (this.userlist.length === 1 && this.currentPage > 1) {
-              this.currentPage--
-            }
-            this.render()
-          }
-        })
       })
+      let res = await this.axios({
+        url: `users/${id}`,
+        method: 'delete'
+      })
+      if (res.meta.status === 200) {
+        // 如果返回的数据数组长度等于1 并且 当前页大于1  就让当前页减1
+        if (this.userlist.length === 1 && this.currentPage > 1) {
+          this.currentPage--
+        }
+        this.render()
+      }
     },
     // 搜索用户
     // axios 里也需要传入一个query
@@ -220,44 +220,42 @@ export default {
     },
     // 添加用户
     addUser() {
-      this.$refs.addForm.validate(valid => {
+      this.$refs.addForm.validate(async valid => {
         if (!valid) return false
-        this.axios({
+        let res = await this.axios({
           url: 'users',
           method: 'post',
           data: this.addForm
-        }).then(res => {
-          console.log(res)
-          let {
-            meta: { status }
-          } = res
-          if (status === 201) {
-            // 因为后台接口没有倒序.所以需要前端手动设置,重新定义currentpage的值倒最后一页
-            // total ++ 是模拟数据增加,bug:增加的时候不会翻页
-            this.total++
-            this.currentPage = Math.ceil(this.total / this.pageSize)
-            // 重新渲染
-            this.render()
-            // 关闭模态框
-            this.dialogVisible = false
-            // 清空列表的数据
-            this.$refs.addForm.resetFields()
-          }
         })
+        console.log(res)
+        let {
+          meta: { status }
+        } = res
+        if (status === 201) {
+          // 因为后台接口没有倒序.所以需要前端手动设置,重新定义currentpage的值倒最后一页
+          // total ++ 是模拟数据增加,bug:增加的时候不会翻页
+          this.total++
+          this.currentPage = Math.ceil(this.total / this.pageSize)
+          // 重新渲染
+          this.render()
+          // 关闭模态框
+          this.dialogVisible = false
+          // 清空列表的数据
+          this.$refs.addForm.resetFields()
+        }
       })
     },
     // switch 提供的一个方法用来检测switch的变化
-    editState({ id, mg_state: mgState }) {
-      this.axios({
+    async editState({ id, mg_state: mgState }) {
+      let res = await this.axios({
         url: `users/${id}/state/${mgState}`,
         method: 'put'
-      }).then(res => {
-        if (res.meta.status === 200) {
-          this.$message.success('状态设置成功')
-        } else {
-          this.$message.error('状态设置失败')
-        }
       })
+      if (res.meta.status === 200) {
+        this.$message.success('状态设置成功')
+      } else {
+        this.$message.error('状态设置失败')
+      }
     },
     // 弹出编辑用户模态框
     editUserDialog(user) {
@@ -270,28 +268,27 @@ export default {
     },
     // 编辑用户
     editUser() {
-      this.$refs.editForm.validate(valid => {
+      this.$refs.editForm.validate(async valid => {
         if (!valid) return false
-        this.axios({
+        let res = await this.axios({
           url: `users/${this.editForm.id}`,
           method: 'put',
           data: this.editForm
-        }).then(res => {
-          let {
-            meta: { status }
-          } = res
-          if (status === 200) {
-            this.render()
-            // 清楚表单的验证状态
-            this.$refs.editForm.resetFields()
-            // 关闭模态框
-            this.editorVisible = false
-            // 提示信息
-            this.$message.success('更新信息成功')
-          } else {
-            this.$message.error('更新用户失败')
-          }
         })
+        let {
+          meta: { status }
+        } = res
+        if (status === 200) {
+          this.render()
+          // 清楚表单的验证状态
+          this.$refs.editForm.resetFields()
+          // 关闭模态框
+          this.editorVisible = false
+          // 提示信息
+          this.$message.success('更新信息成功')
+        } else {
+          this.$message.error('更新用户失败')
+        }
       })
     }
   },
@@ -303,10 +300,7 @@ export default {
 </script>
 
 <style>
-.el-breadcrumb {
-  height: 40px;
-  line-height: 40px;
-}
+
 .el-input {
   width: 280px;
   margin-bottom: 10px;
